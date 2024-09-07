@@ -596,11 +596,16 @@ DisplayError CompManager::ValidateAndSetCursorPosition(Handle display_ctx,
 
 DisplayError CompManager::SetMaxBandwidthMode(HWBwModes mode) {
   std::lock_guard<std::recursive_mutex> obj(comp_mgr_mutex_);
+  DisplayError error = kErrorNotSupported;
   if (mode >= kBwModeMax) {
-    return kErrorNotSupported;
+    return error;
   }
 
-  return resource_intf_->SetMaxBandwidthMode(mode);
+  if (resource_intf_) {
+    return resource_intf_->SetMaxBandwidthMode(mode);
+  }
+
+  return error;
 }
 
 DisplayError CompManager::GetScaleLutConfig(HWScaleLutInfo *lut_info) {
@@ -805,6 +810,16 @@ bool CompManager::IsRotatorSupportedFormat(LayerBufferFormat format) {
 
   return false;
 }
+
+bool CompManager::IsDisplayHWAvailable() {
+  std::lock_guard<std::recursive_mutex> obj(comp_mgr_mutex_);
+  if (resource_intf_) {
+    return resource_intf_->IsDisplayHWAvailable();
+  }
+
+  return false;
+}
+
 
 DisplayError CompManager::FreeDemuraFetchResources(const uint32_t &display_id) {
   std::lock_guard<std::recursive_mutex> obj(comp_mgr_mutex_);

@@ -91,7 +91,6 @@ PRODUCT_COPY_FILES += $(DISPLAY_HAL_DIR)/config/smomo_setting.xml:$(TARGET_COPY_
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.demo.hdmirotationlock=false \
     persist.sys.sf.color_saturation=1.0 \
-    persist.sys.sf.color_mode=9 \
     debug.sf.hw=0 \
     debug.egl.hw=0 \
     debug.sf.latch_unsignaled=1 \
@@ -149,11 +148,13 @@ endif
 ifeq ($(TARGET_BOARD_PLATFORM),parrot)
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.enable_hwc_vds=false \
-    vendor.display.vds_allow_hwc=true
+    vendor.display.vds_allow_hwc=true \
+    persist.sys.sf.color_mode=7
 else
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.enable_hwc_vds=1 \
-    vendor.display.vds_allow_hwc=0
+    vendor.display.vds_allow_hwc=0 \
+    persist.sys.sf.color_mode=9
 endif
 
 #Set WCG properties
@@ -164,6 +165,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.set_touch_timer_ms=200
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.force_hwc_copy_for_virtual_displays=true
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.max_frame_buffer_acquired_buffers=3
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.max_virtual_display_dimension=4096
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.game_default_frame_rate_override=60
 
 ifeq ($(TARGET_BOARD_PLATFORM),neo)
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.has_wide_color_display=false
@@ -173,6 +175,13 @@ else
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.has_wide_color_display=true
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.has_HDR_display=true
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.wcg_composition_dataspace=143261696
+endif
+
+#Background blur support
+ifeq ($(TARGET_BOARD_PLATFORM),parrot)
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.supports_background_blur=0
+else
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.surface_flinger.supports_background_blur=1
 endif
 
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
